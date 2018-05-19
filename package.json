@@ -1,0 +1,34 @@
+{
+  "name": "intercraft_network",
+  "version": "0.0.1",
+  "description": "The official network for InterCraft",
+  "main": "gulpfile.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-watch": "^5.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^5.0.1",
+    "fs-jetpack": "^1.3.0",
+    "gulp": "^3.9.1",
+    "gulp-luaminify": "0.0.1",
+    "gulp-multi-dest": "^1.3.7",
+    "gulp-plumber": "^1.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/InterCraftOfficial/InterNet.git"
+  },
+  "author": "David Ludwig",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/InterCraftOfficial/InterNet/issues"
+  },
+  "homepage": "https://github.com/InterCraftOfficial/InterNet#readme"
+}
