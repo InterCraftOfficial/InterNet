@@ -2,7 +2,6 @@ local computer = require("computer")
 local Route    = require("network/routing/route")
 
 RoutingTable = {
-	__default = nil,
 	__routes  = {}
 }
 RoutingTable.__index = RoutingTable
@@ -37,11 +36,10 @@ function RoutingTable:resolve(address)
 			end
 		end
 	end
-	return bestRoute or self.__default
-end
-
-function RoutingTable:setDefaultRoute(route)
-	self.__default = route
+	if bestRoute and bestRoute.gateway then
+		return self:resolve(bestRoute.gateway)
+	end
+	return bestRoute
 end
 
 -- Module Export -----------------------------------------------------------------------------------

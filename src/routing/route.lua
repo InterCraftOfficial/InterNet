@@ -29,7 +29,7 @@ end
 -- Methods -----------------------------------------------------------------------------------------
 
 function Route:matches(address)
-	return (address & self.mask) == self.destination
+	return (address & self.mask) == (self.destination & self.mask)
 end
 
 -- Module Export -----------------------------------------------------------------------------------
