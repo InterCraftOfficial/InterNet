@@ -17,7 +17,6 @@ setmetatable(Route, {
 })
 
 function Route:constructor(destination, gateway, metric, interface)
-	print(interface)
 	self.destination  = destination
 	self.gateway      = gateway
 	self.metric       = metric
