@@ -21,7 +21,7 @@ end
 -- Methods -----------------------------------------------------------------------------------------
 
 function RoutingTable:add(route)
-	table.insert(self.__routes, route)
+	self.__routes[route.destination or "default"] = route
 end
 
 function RoutingTable:list()
@@ -29,21 +29,11 @@ function RoutingTable:list()
 end
 
 function RoutingTable:resolve(address)
-	-- This is really not the best way to handle this.
-	-- Really it should be using something like a trie
-	-- to search through, but this works for now...
-	local bestRoute = nil
-	for i, route in pairs(self.__routes) do
-		if route:matches(address) then
-			if bestRoute == nil or route.prefixLength > bestRoute.prefixLength then
-				bestRoute = route
-			end
-		end
+	local route = self.__routes[address] or self.__routes["default"]
+	if route.gateway then
+		return self:resolve(route.gateway)
 	end
-	if bestRoute and bestRoute.gateway then
-		return self:resolve(bestRoute.gateway)
-	end
-	return bestRoute
+	return route
 end
 
 -- Module Export -----------------------------------------------------------------------------------

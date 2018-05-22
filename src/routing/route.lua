@@ -3,7 +3,6 @@ local netutils = require("network/netutils")
 Route = {
 	destination = nil,
 	gateway     = nil,
-	mask        = nil,
 	metric      = nil,
 	interface   = nil
 }
@@ -17,19 +16,12 @@ setmetatable(Route, {
 	end
 })
 
-function Route:constructor(destination, gateway, mask, metric, interface)
+function Route:constructor(destination, gateway, metric, interface)
+	print(interface)
 	self.destination  = destination
 	self.gateway      = gateway
-	self.mask         = mask
 	self.metric       = metric
 	self.interface    = interface
-	self.prefixLength = netutils.prefixLength(mask)
-end
-
--- Methods -----------------------------------------------------------------------------------------
-
-function Route:matches(address)
-	return (address & self.mask) == (self.destination & self.mask)
 end
 
 -- Module Export -----------------------------------------------------------------------------------

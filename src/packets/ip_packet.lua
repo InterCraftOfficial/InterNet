@@ -2,12 +2,13 @@ local serialization = require("serialization")
 local Packet = require("network/packets/packet")
 
 IpPacket = {
-	PROTOCOL = "IPV4",
+	PROTOCOL = "IP",
 
-	__destinationIp   = nil,
+	__destinationUuid = nil,
 	__destinationPort = nil,
-	__sourceIp        = nil,
-	__sourcePort      = nil
+	__sourceUuid      = nil,
+	__sourcePort      = nil,
+	__payload         = nil
 }
 IpPacket.__index = IpPacket
 
@@ -21,9 +22,9 @@ setmetatable(IpPacket, {
 })
 
 function IpPacket:constructor(destination, port, sourcePort, payload)
-	self.__destinationIp   = destination
+	self.__destinationUuid = destination
 	self.__destinationPort = port
-	self.__sourceIp        = nil
+	self.__sourceUuid      = nil
 	self.__sourcePort      = sourcePort
 	self.__payload         = payload
 end
@@ -33,9 +34,9 @@ end
 function IpPacket:unpack()
 	return table.unpack({
 		IpPacket.PROTOCOL,
-		self.__destinationIp,
+		self.__destinationUuid,
 		self.__destinationPort,
-		self.__sourceIp,
+		self.__sourceUuid,
 		self.__sourcePort,
 		serialization.serialize(self.__payload)
 	})
@@ -44,9 +45,9 @@ end
 function IpPacket:serialize()
 	return serialization.serialize({
 		IpPacket.PROTOCOL,
-		destIp     = self.__destinationIp,
+		destUuid   = self.__destinationUuid,
 		destPort   = self.__destinationPort,
-		sourceIp   = self.__sourceIp,
+		sourceUuid = self.__sourceUuid,
 		sourcePort = self.__sourcePort,
 		payload    = self.__payload
 	})

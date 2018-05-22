@@ -8,9 +8,7 @@ local IpPacket  = require("network/packets/ip_packet")
 LanInterface = {
 	LAN_PORT = 1, -- The reserved port for general IP communication
 
-	__ethernet       = nil,
-	__ipAddress      = nil,
-	__mask           = nil,
+	__hwAddress      = nil,
 	__modem          = nil,
 	__defaultGateway = nil
 }
@@ -45,9 +43,9 @@ function LanInterface:open(port)
 end
 
 function LanInterface:send(packet)
-	assert(self.__ethernet ~= nil and self.__modem ~= nil)
-	packet:setSource(self.__ipAddress)
-	sendRaw(self.__ethernet, LAN_PORT, packet)
+	assert(self.__hwAddress ~= nil and self.__modem ~= nil)
+	packet:setSource(self.__modem.address)
+	sendRaw(self.__hwAddress, LAN_PORT, packet)
 end
 
 function LanInterface:sendRaw(address, port, packet)
@@ -64,16 +62,8 @@ function LanInterface:hwAddress()
 	return self.__hwAddress
 end
 
-function LanInterface:ipAddress()
-	return self.__ipAddress
-end
-
 function LanInterface:modem()
 	return self.__modem
-end
-
-function LanInterface:mask()
-	return self.__mask
 end
 
 -- Mutators ----------------------------------------------------------------------------------------
@@ -86,16 +76,8 @@ function LanInterface:setHwAddress(hwAddress)
 	self.__hwAddress = hwAddress
 end
 
-function LanInterface:setIpAddress(ipAddress)
-	self.__ipAddress = ipAddress
-end
-
 function LanInterface:setModem(modem)
 	self.__modem = modem
-end
-
-function LanInterface:setMask(mask)
-	self.__mask = mask
 end
 
 -- Module Export -----------------------------------------------------------------------------------

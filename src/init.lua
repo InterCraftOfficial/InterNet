@@ -29,8 +29,6 @@ function network.updateInterfaces()
 	-- Loopback Interface
 
 	local loopback = LoopbackInterface("lo")
-	loopback:setIpAddress(0x7f000001)
-	loopback:setMask(0xff000000)
 	interfaces["lo"] = loopback
 
 	network.interfaces = interfaces

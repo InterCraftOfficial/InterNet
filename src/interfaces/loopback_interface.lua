@@ -21,7 +21,7 @@ end
 
 -- Methods -----------------------------------------------------------------------------------------
 
-function LanInterface:sendIp(packet)
+function LanInterface:send(packet)
 	assert(self.__address ~= nil and self.__modem ~= nil)
 	packet.setSource(self.__ipAddress)
 	sendRaw(self.__address, LAN_PORT, packet)
