@@ -3,4 +3,7 @@ function string.at(str, i)
 end
 
 return {
+	randomPort = function()
+		return math.floor(math.random() * (65535 - 1000)) + 1
+	end
 }
