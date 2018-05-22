@@ -1,83 +1,104 @@
 local component = require("component")
 local Interface = require("network/interfaces/interface")
-local modem     = component.modem
+local Packet    = require("network/packets/packet")
+local IpPacket  = require("network/packets/ip_packet")
 
 -- LanInterface Class ------------------------------------------------------------------------------
 
-LanInterface = Interface:new{}
+LanInterface = {
+	LAN_PORT = 1, -- The reserved port for general IP communication
 
-function LanInterface:new(name, modem)
-	o = {}
-	setmetatable(o, self)
-	self.__index          = self
-	self.__name           = name
-	self.__modem          = modem
-	self.__ipAddress      = nil
-	self.__mask           = 0x0
-	self.__defaultGateway = nil
-	self.__address        = nil
-	return o
+	__hwAddress      = nil,
+	__ipAddress      = nil,
+	__mask           = nil,
+	__modem          = nil,
+	__defaultGateway = nil
+}
+LanInterface.__index = LanInterface
+
+setmetatable(LanInterface, {
+	__index = Interface,
+	__call  = function(cls, ...)
+		local self = setmetatable({}, cls)
+		self:constructor(...)
+		return self
+	end
+})
+
+function LanInterface:constructor(name, modem)
+	Interface.constructor(self, name)
+	self.__modem = modem
 end
 
 -- Methods -----------------------------------------------------------------------------------------
 
-function send(packet)
-
+function LanInterface:broadcastRaw(port, packet)
+	self.__modem.broadcast(port, packet:unpack())
 end
 
-function sendTo(address, packet)
-
+function LanInterface:close(port)
+	self.__modem.close(port)
 end
 
-function receive()
+function LanInterface:open(port)
+	self.__modem.open(port)
+end
 
+function LanInterface:sendIp(packet)
+	assert(self.__hwAddress ~= nil and self.__modem ~= nil)
+	packet:setSource(self.__ipAddress)
+	sendRaw(self.__hwAddress, LAN_PORT, packet)
+end
+
+function LanInterface:sendRaw(address, port, packet)
+	self.__modem.send(address, port, packet:unpack())
 end
 
 -- Accessors ---------------------------------------------------------------------------------------
 
-function address()
-	return self.__address
-end
-
-function defaultGateway()
+function LanInterface:defaultGateway()
 	return self.__defaultGateway
 end
 
-function ipAddress()
+function LanInterface:hwAddress()
+	return self.__hwAddress
+end
+
+function LanInterface:ipAddress()
 	return self.__ipAddress
 end
 
-function modem()
+function LanInterface:modem()
 	return self.__modem
 end
 
-function mask()
+function LanInterface:mask()
 	return self.__mask
 end
 
 -- Mutators ----------------------------------------------------------------------------------------
 
-function setAddress(address)
-	self.__address = address
-end
-
-function setDefaultGateway(defaultGateway)
+function LanInterface:setDefaultGateway(defaultGateway)
 	self.__defaultGateway = defaultGateway
 end
 
-function setIpAddress(ipAddress)
+function LanInterface:setHwAddress(hwAddress)
+	self.__hwAddress = hwAddress
+end
+
+function LanInterface:setIpAddress(ipAddress)
 	self.__ipAddress = ipAddress
 end
 
-function setModem(modem)
+function LanInterface:setModem(modem)
 	self.__modem = modem
 end
 
-function setMask(mask)
+function LanInterface:setMask(mask)
 	self.__mask = mask
 end
 
 -- Module Export -----------------------------------------------------------------------------------
 
-return Interface
+return LanInterface
 

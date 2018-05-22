@@ -3,13 +3,19 @@ Interface = {
 	__name  = nil,
 	__state = nil
 }
+Interface.__index = Interface
 
-function Interface:new(name)
-	o = {}
-	setmetatable(o, self)
-	self.__index = self
-	self.__name  = name
-	return o
+setmetatable(Interface, {
+	__call = function(cls, ...)
+		local self = setmetatable({}, cls)
+		self:constructor(...)
+		return self
+	end
+})
+
+function Interface:constructor(name)
+	self.__name = name
+	print(self)
 end
 
 -- Methods -----------------------------------------------------------------------------------------
