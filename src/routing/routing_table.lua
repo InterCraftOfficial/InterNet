@@ -24,6 +24,10 @@ function RoutingTable:add(route)
 	table.insert(self.__routes, route)
 end
 
+function RoutingTable:list()
+	return self.__routes
+end
+
 function RoutingTable:resolve(address)
 	-- This is really not the best way to handle this.
 	-- Really it should be using something like a trie
