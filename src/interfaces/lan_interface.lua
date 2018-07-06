@@ -25,7 +25,7 @@ setmetatable(LanInterface, {
 
 function LanInterface:constructor(name, modem)
 	Interface.constructor(self, name)
-	self.__modem = modem
+	self.__modem     = modem
 end
 
 -- Methods -----------------------------------------------------------------------------------------

@@ -1,14 +1,22 @@
 local component         = require("component")
+local event             = require("event")
 local LanInterface      = require("network/interfaces/lan_interface")
 local LoopbackInterface = require("network/interfaces/loopback_interface")
 local RoutingTable      = require("network/routing/routing_table")
+local netmanager        = require("network/netmanager")
 local netutils          = require("network/netutils")
 
 local network = {
 	interfaces = {},
+	manager    = netmanager,
 	routes     = RoutingTable(),
 	utils      = netutils
 }
+
+function network.init()
+	network.updateInterfaces()
+	network.manager:enable()
+end
 
 function network.updateInterfaces()
 	interfaces = {}
@@ -32,6 +40,10 @@ function network.updateInterfaces()
 	interfaces["lo"] = loopback
 
 	network.interfaces = interfaces
+end
+
+function network.defaultInterface()
+	return interfaces["eth0"] or interfaces["wlan0"] or interfaces["lo"]
 end
 
 return network
