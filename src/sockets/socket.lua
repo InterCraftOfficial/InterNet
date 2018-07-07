@@ -48,21 +48,39 @@ end
 
 function Socket:close()
 	assert(self.__isOpen)
+	network.manager:close(self.__port)
 	self.__isOpen     = false
 	self.__isFinished = true
-	network.manager:close(port)
+	self.__port       = nil
 end
 
 -- Overridable Methods -----------------------------------------------------------------------------
 
-function Socket:send()
-
+-- IpPacket packet
+function Socket:sendRaw(packet)
+	local route = network.routes:resolve(packet:destinationUuid())
+	if not self.__isOpen then
+		self:open(route.interface)
+	end
+	packet:setSourceUuid(route.interface:modem().address)
+	packet:setSourcePort(self.__port)
+	route.interface:sendRaw(route.destination, packet:destinationPort(), packet)
 end
 
 function Socket:receive()
 	if self.__isOpen then
-		return network.manager:read(self.__port)
+		return network.manager:read(self.__port, self.__blocking, self.__timeout)
 	end
+end
+
+-- Mutators ----------------------------------------------------------------------------------------
+
+function Socket:setBlocking(blocking)
+	self.__blocking = blocking
+end
+
+function Socket:setTimeout(timeout)
+	self.__timeout = timeout
 end
 
 -- Module Export -----------------------------------------------------------------------------------

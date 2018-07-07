@@ -42,10 +42,10 @@ function LanInterface:open(port)
 	self.__modem.open(port)
 end
 
-function LanInterface:send(packet)
+function LanInterface:send(destination, packet)
 	assert(self.__hwAddress ~= nil and self.__modem ~= nil)
-	packet:setSource(self.__modem.address)
-	sendRaw(self.__hwAddress, LAN_PORT, packet)
+	packet:setSourceUuid(self.__modem.address)
+	self:sendRaw(destination, self.LAN_PORT, packet)
 end
 
 function LanInterface:sendRaw(address, port, packet)

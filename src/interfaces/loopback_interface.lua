@@ -21,17 +21,17 @@ end
 
 -- Methods -----------------------------------------------------------------------------------------
 
-function LanInterface:send(packet)
+function LoopbackInterface:send(packet)
 	assert(self.__address ~= nil and self.__modem ~= nil)
 	packet.setSource(self.__ipAddress)
 	sendRaw(self.__address, LAN_PORT, packet)
 end
 
-function LanInterface:sendRaw(address, port, packet)
+function LoopbackInterface:sendRaw(address, port, packet)
 	-- Dispatch the packet to the applications
 end
 
-function LanInterface:receive()
+function LoopbackInterface:receive()
 	-- Receive a packet
 end
 

@@ -1,9 +1,8 @@
 local serialization = require("serialization")
 
 Packet = {
-	PROTOCOL   = nil,
-	__protocol = nil,
-	__payload  = nil
+	PROTOCOL          = nil,
+	__payload         = nil
 }
 Packet.__index = Packet
 
@@ -15,8 +14,10 @@ setmetatable(Packet, {
 	end
 })
 
-function Packet:constructor(payload)
-	self.__payload = nil
+function Packet:constructor(destination, port, payload)
+	self.__destinationUuid = destination
+	self.__destinationPort = port
+	self.__payload         = nil
 end
 
 -- Overridable Methods -----------------------------------------------------------------------------
