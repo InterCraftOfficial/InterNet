@@ -1,4 +1,6 @@
 local component = require("component")
+local computer  = require("computer")
+local event     = require("event")
 local Interface = require("network/interfaces/interface")
 local Packet    = require("network/packets/packet")
 local IpPacket  = require("network/packets/ip_packet")
@@ -30,10 +32,6 @@ end
 
 -- Methods -----------------------------------------------------------------------------------------
 
-function LanInterface:broadcastRaw(port, packet)
-	self.__modem.broadcast(port, packet:unpack())
-end
-
 function LanInterface:close(port)
 	self.__modem.close(port)
 end
@@ -49,7 +47,11 @@ function LanInterface:send(destination, packet)
 end
 
 function LanInterface:sendRaw(address, port, packet)
-	self.__modem.send(address, port, packet:unpack())
+	if address == nil then
+		self.__modem.broadcast(port, packet:unpack())
+	else
+		self.__modem.send(address, port, packet:unpack())
+	end
 end
 
 -- Accessors ---------------------------------------------------------------------------------------

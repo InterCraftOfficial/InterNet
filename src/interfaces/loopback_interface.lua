@@ -1,9 +1,12 @@
 local component = require("component")
+local event     = require("event")
 local Interface = require("network/interfaces/lan_interface")
 
 -- LoopbackInterface Class ------------------------------------------------------------------------------
 
-LoopbackInterface = {}
+LoopbackInterface = {
+	__openPorts = {}
+}
 LoopbackInterface.__index = LoopbackInterface
 
 setmetatable(LoopbackInterface, {
@@ -21,18 +24,16 @@ end
 
 -- Methods -----------------------------------------------------------------------------------------
 
-function LoopbackInterface:send(packet)
-	assert(self.__address ~= nil and self.__modem ~= nil)
-	packet.setSource(self.__ipAddress)
-	sendRaw(self.__address, LAN_PORT, packet)
+function LoopbackInterface:open(port)
+	self.__openPorts[port] = true
 end
 
-function LoopbackInterface:sendRaw(address, port, packet)
-	-- Dispatch the packet to the applications
+function LoopbackInterface:close(port)
+	self.__openPorts[port] = nil
 end
 
-function LoopbackInterface:receive()
-	-- Receive a packet
+function LoopbackInterface:send(port, packet)
+	-- Send packet to event handler
 end
 
 -- Accessors ---------------------------------------------------------------------------------------

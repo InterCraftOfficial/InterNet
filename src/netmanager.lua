@@ -36,7 +36,9 @@ function netmanager:close(port)
 end
 
 function netmanager:write(port, packet)
-	table.insert(self.__netbuffer[port].queue, packet)
+	if self.__netbuffer[port] ~= nil then
+		table.insert(self.__netbuffer[port].queue, packet)
+	end
 end
 
 function netmanager:read(port, blocking, timeout)
