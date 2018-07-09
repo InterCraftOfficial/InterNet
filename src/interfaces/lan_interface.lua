@@ -46,11 +46,11 @@ function LanInterface:send(destination, packet)
 	self:sendRaw(destination, self.LAN_PORT, packet)
 end
 
-function LanInterface:sendRaw(address, port, packet)
+function LanInterface:sendRaw(destination, port, packet)
 	if address == nil then
 		self.__modem.broadcast(port, packet:unpack())
 	else
-		self.__modem.send(address, port, packet:unpack())
+		self.__modem.send(destination, port, packet:unpack())
 	end
 end
 

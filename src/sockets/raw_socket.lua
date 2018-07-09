@@ -84,6 +84,10 @@ function RawSocket:isOpen()
 	return self.__isOpen
 end
 
+function RawSocket:port()
+	return self.__port
+end
+
 -- Mutators ----------------------------------------------------------------------------------------
 
 function RawSocket:setBlocking(blocking)

@@ -19,6 +19,15 @@ setmetatable(IpPacket, {
 	end
 })
 
+function IpPacket.fromRawPacket(rawPacket)
+	assert(rawPacket ~= nil,                  "No packet received")
+	assert(rawPacket[5] == IpPacket.PROTOCOL, "Incorrect protocol")
+	local packet = IpPacket(rawPacket[6], rawPacket[7], serialization.unserialize(rawPacket[10])) -- Destination, port, payload
+	packet:setSourceUuid(rawPacket[8])
+	packet:setSourcePort(rawPacket[9])
+	return packet
+end
+
 function IpPacket:constructor(destination, port, payload)
 	self:setDestinationUuid(destination)
 	self:setDestinationPort(port)

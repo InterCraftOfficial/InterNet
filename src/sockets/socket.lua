@@ -19,14 +19,23 @@ end
 
 -- Overridable Methods -----------------------------------------------------------------------------
 
-function Socket:send(packet)
-	local route = network.routes:resolve(packet:destinationUuid())
+function Socket:send(ipPacket)
+	local route = network.routes:resolve(ipPacket:destinationUuid())
 	if not self:isOpen() then
 		self:open(route.interface)
 	end
-	packet:setSourceUuid(route.interface:modem().address)
-	packet:setSourcePort(self.__port)
-	RawSocket.send(self, route.interface, route.destination, packet:destinationPort(), packet)
+	ipPacket:setSourceUuid(route.interface:modem().address)
+	ipPacket:setSourcePort(self:port())
+	RawSocket.send(self, route.interface, route.destination, ipPacket:destinationPort(), ipPacket)
+end
+
+function Socket:receive()
+	local rawPacket = RawSocket.receive(self)
+	local status, result = pcall(IpPacket.fromRawPacket, rawPacket)
+	if status then
+		return result
+	end
+	return nil
 end
 
 -- Module Export -----------------------------------------------------------------------------------

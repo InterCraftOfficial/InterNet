@@ -1,8 +1,8 @@
 local serialization = require("serialization")
 
 Packet = {
-	PROTOCOL  = "RAW",
-	__payload = nil
+	PROTOCOL      = "RAW",
+	__payload     = nil
 }
 Packet.__index = Packet
 
