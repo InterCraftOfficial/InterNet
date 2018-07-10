@@ -34,6 +34,10 @@ end
 
 -- Accessors ---------------------------------------------------------------------------------------
 
+function address()
+	return nil
+end
+
 function Interface:name()
 	return self.__name
 end

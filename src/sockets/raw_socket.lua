@@ -7,7 +7,9 @@ RawSocket = {
 	__timeout    = nil,
 	__interface  = nil,
 	__isOpen     = false,
-	__isFinished = false
+	__isFinished = false,
+	__buffer     = {},
+	__bufferSize = 100
 }
 RawSocket.__index = RawSocket
 
@@ -36,19 +38,19 @@ function RawSocket:open(interface, port)
 	end
 	if port == nil then
 		port = netutils.randomPort()
-		while network.manager:isOpen(port) do
+		while network.manager:isOpen(interface, port) do
 			port = netutils.randomPort()
 		end
 	end
-	network.manager:open(interface, port)
 	self.__interface = interface
 	self.__port      = port
 	self.__isOpen    = true
+	network.manager:open(self.__interface, self.__port, self)
 end
 
 function RawSocket:close()
 	assert(self.__isOpen)
-	network.manager:close(self.__port)
+	network.manager:close(self.__interface, self.__port)
 	self.__isOpen     = false
 	self.__isFinished = true
 	self.__port       = nil
@@ -61,12 +63,27 @@ function RawSocket:send(interface, destination, port, packet)
 end
 
 function RawSocket:receive()
-	if self.__isOpen then
-		return network.manager:read(self.__port, self.__blocking, self.__timeout)
+	assert(self.__isOpen, "Attempt to receive on a closed socket")
+	if #self.__buffer == 0 and self.__blocking then
+		network.manager:waitForPacket(self.__interface, self.__port, self.__timeout)
 	end
+	return self:readFromBuffer()
+end
+
+function RawSocket:readFromBuffer()
+	return table.remove(self.__buffer, 1)
+end
+
+function RawSocket:writeToBuffer(packet)
+	assert(#self.__buffer < self.__bufferSize, "Socket buffer overflow")
+	table.insert(self.__buffer, packet)
 end
 
 -- Accessors ---------------------------------------------------------------------------------------
+
+function RawSocket:bufferSize()
+	return self.__bufferSize
+end
 
 function RawSocket:isBlocking()
 	return self.__blocking
@@ -89,6 +106,10 @@ function RawSocket:port()
 end
 
 -- Mutators ----------------------------------------------------------------------------------------
+
+function RawSocket:setBufferSize(size)
+	self.__bufferSize = size
+end
 
 function RawSocket:setBlocking(blocking)
 	self.__blocking = blocking

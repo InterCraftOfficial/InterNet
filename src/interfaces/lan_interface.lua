@@ -33,11 +33,11 @@ end
 -- Methods -----------------------------------------------------------------------------------------
 
 function LanInterface:close(port)
-	self.__modem.close(port)
+	return self.__modem.close(port)
 end
 
 function LanInterface:open(port)
-	self.__modem.open(port)
+	return self.__modem.open(port)
 end
 
 function LanInterface:send(destination, packet)
@@ -55,6 +55,10 @@ function LanInterface:sendRaw(destination, port, packet)
 end
 
 -- Accessors ---------------------------------------------------------------------------------------
+
+function LanInterface:address()
+	return self.__modem.address
+end
 
 function LanInterface:defaultGateway()
 	return self.__defaultGateway

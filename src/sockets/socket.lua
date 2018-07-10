@@ -24,7 +24,7 @@ function Socket:send(ipPacket)
 	if not self:isOpen() then
 		self:open(route.interface)
 	end
-	ipPacket:setSourceUuid(route.interface:modem().address)
+	ipPacket:setSourceUuid(route.interface:address())
 	ipPacket:setSourcePort(self:port())
 	RawSocket.send(self, route.interface, route.destination, ipPacket:destinationPort(), ipPacket)
 end

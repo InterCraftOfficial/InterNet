@@ -1,3 +1,5 @@
+-- A utility to manage sockets on the system
+
 local computer = require("computer")
 local event    = require("event")
 
@@ -15,52 +17,49 @@ end
 
 function netmanager.onReceive(eventName, ...)
 	local packet = {...}
+	local addr   = packet[1]
 	local port   = packet[3]
-	if netmanager:isOpen(port) then
-		netmanager:write(port, packet)
+	local socket = netmanager.__netbuffer[addr][port]
+	pcall(socket.writeToBuffer, socket, packet)
+end
+
+function netmanager:open(interface, port, socket)
+	assert(not self:isOpen(interface, port))
+	local addr = interface:address()
+	if self.__netbuffer[addr] == nil then
+		self.__netbuffer[addr] = {}
 	end
-end
-
-function netmanager:open(interface, port)
-	assert(not self:isOpen(port))
-	interface:open(port)
-	self.__netbuffer[port] = {
-		interface = interface,
-		queue     = {}
-	}
-end
-
-function netmanager:close(port)
-	self.__netbuffer[port].interface:close(port)
-	self.__netbuffer[port] = nil
-end
-
-function netmanager:write(port, packet)
-	if self.__netbuffer[port] ~= nil then
-		table.insert(self.__netbuffer[port].queue, packet)
+	if interface:open(port) then
+		self.__netbuffer[addr][port] = socket
+		return true
 	end
+	return false
 end
 
-function netmanager:read(port, blocking, timeout)
-	if #self.__netbuffer[port].queue > 0 then
-		return table.remove(self.__netbuffer[port].queue, 1)
-	elseif blocking then
-		local start = computer.uptime()
-		repeat
-			local packet = nil
-			if timeout then
-				packet = {event.pull(timeout - (computer.uptime() - start), "modem_message")}
-			else
-				packet = {event.pull("modem_message")}
-			end
-		until packet == nil or (timeout and computer.uptime() - start >= timeout) or packet[4] == port
-		return table.remove(self.__netbuffer[port].queue, 1)
-	end
-	return nil
+function netmanager:close(interface, port)
+	interface:close(port)
+	self.__netbuffer[interface:address()][port] = nil
 end
 
-function netmanager:isOpen(port)
-	return self.__netbuffer[port] ~= nil
+function netmanager:isOpen(interface, port)
+	local addr = interface:address()
+	return self.__netbuffer[addr] and self.__netbuffer[addr][port]
+end
+
+-- May move back into socket class... We'll see
+function netmanager:waitForPacket(interface, port, timeout)
+	local addr   = interface:address()
+	local start  = computer.uptime()
+	local packet = nil
+	repeat
+		if timeout then
+			packet = {event.pull(timeout - (computer.uptime() - start), "modem_message")}
+		else
+			packet = {event.pull("modem_message")}
+		end
+	until packet == nil
+		  or (timeout and computer.uptime() - start >= timeout)
+		  or (packet[2] == addr and packet[4] == port)
 end
 
 return netmanager
