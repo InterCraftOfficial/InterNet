@@ -20,7 +20,8 @@ function netmanager.onReceive(eventName, ...)
 	local addr   = packet[1]
 	local port   = packet[3]
 	local socket = netmanager.__netbuffer[addr][port]
-	pcall(socket.writeToBuffer, socket, packet)
+	-- pcall(socket.writeToBuffer, socket, packet)
+	socket:writeToBuffer(packet)
 end
 
 function netmanager:open(interface, port, socket)
@@ -52,11 +53,7 @@ function netmanager:waitForPacket(interface, port, timeout)
 	local start  = computer.uptime()
 	local packet = nil
 	repeat
-		if timeout then
-			packet = {event.pull(timeout - (computer.uptime() - start), "modem_message")}
-		else
-			packet = {event.pull("modem_message")}
-		end
+		packet = {event.pull((timeout or 1) - (computer.uptime() - start), "modem_message")}
 	until packet == nil
 		  or (timeout and computer.uptime() - start >= timeout)
 		  or (packet[2] == addr and packet[4] == port)

@@ -15,7 +15,6 @@ setmetatable(Interface, {
 
 function Interface:constructor(name)
 	self.__name = name
-	print(self)
 end
 
 -- Methods -----------------------------------------------------------------------------------------
